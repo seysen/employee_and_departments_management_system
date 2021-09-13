@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+
+  departments:
+    image: departments-management:1.0.0
+#    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/departments
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - employee-departments-network
+
+
+  employee:
+    image: employee-management:1.0.0
+#    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/employees
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    networks:
+      - employee-departments-network
+
+
+  db:
+    image: database:1.0.0
+    restart: always
+    ports:
+    - "54320:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: departments
+    volumes:
+    - db:/var/lib/postgresql/data
+    networks:
+      - employee-departments-network
+
+volumes:
+  db:
+
+networks:
+  employee-departments-network:
